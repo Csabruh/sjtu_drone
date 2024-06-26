@@ -1,4 +1,6 @@
 from setuptools import setup
+from glob import glob
+import os
 
 package_name = 'sjtu_drone_control'
 
@@ -10,6 +12,8 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        (os.path.join('share', package_name, "sjtu_drone_control"), glob('sjtu_drone_control/drone_utils/*.py')),
+        
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -23,7 +27,10 @@ setup(
             'teleop = sjtu_drone_control.teleop:main',
             'teleop_joystick = sjtu_drone_control.teleop_joystick:main',
             'open_loop_control = sjtu_drone_control.open_loop_control:main',
-            'drone_position_control = sjtu_drone_control.drone_position_control:main'
+            'drone_position_control = sjtu_drone_control.drone_position_control:main',
+            'movement_control = sjtu_drone_control.movement_control:main',
+            'lidar_scan_feldolg = sjtu_drone_control.lidar_scan_feldolg:main'
+            
         ],
     },
 )

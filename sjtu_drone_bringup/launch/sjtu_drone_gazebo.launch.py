@@ -66,6 +66,13 @@ def generate_launch_description():
             )]
         return []
 
+    sjtu_drone_bringup = Node(
+            package="sjtu_drone_bringup",
+            executable="spawn_drone",
+            arguments=[robot_desc, model_ns],
+            output="screen"
+        )
+    
     return LaunchDescription([
         use_gui,
         Node(
@@ -97,12 +104,7 @@ def generate_launch_description():
 
         OpaqueFunction(function=launch_gzclient),
 
-        Node(
-            package="sjtu_drone_bringup",
-            executable="spawn_drone",
-            arguments=[robot_desc, model_ns],
-            output="screen"
-        ),
+        sjtu_drone_bringup,
 
         Node(
             package="tf2_ros",

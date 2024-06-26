@@ -1,15 +1,11 @@
 <?xml version="1.0" ?>
 <robot name="sjtu_drone" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-  <!-- Adding lidar stuff to robot frame -->
-  <xacro:include filename="inertial_macros.xacro"/>
-
-  <material name="red">
-      <color rgba="1 0.2 0.2 1" />
-  </material>
+  <!-- Adding lidar to robot frame -->
+  <xacro:include filename="lidar.xacro" />
 
 
-  <!-- https://answers.ros.org/question/379014/passing-outside-parameters-into-urdf-file-using-xacro/ -->
+<!-- https://answers.ros.org/question/379014/passing-outside-parameters-into-urdf-file-using-xacro/ -->
   <!-- Need argument to get from launch file -->
   <xacro:arg name="params_path" default="$(find sjtu_drone_bringup)/config/drone.yaml"/> 
 
@@ -58,6 +54,7 @@
   </joint>
   <link name="sonar_link"/>
 
+
   <joint name="front_cam_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0.2 0 0"/>
     <parent link="base_link" />
@@ -72,29 +69,6 @@
   </joint>
   <link name="bottom_cam_link"/>
 
-
-  <joint name="laser_joint" type="fixed">
-      <parent link="base_link" />
-      <child link="laser_frame" />
-      <origin xyz="0 0 0.14" rpy="0 0 0" />
-  </joint>
-
-  <link name="laser_frame">
-      <visual>
-          <geometry>
-              <cylinder radius="0.1" length="0.05"/>
-          </geometry>
-          <material name="red" />
-      </visual>
-      <collision>
-          <geometry>
-              <cylinder radius="0.1" length="0.05"/>
-          </geometry>
-      </collision>
-      <xacro:inertial_cylinder mass="0.1" length="0.05" radius="0.1">
-          <origin xyz="0 0 0" rpy="0 0 0"/>
-      </xacro:inertial_cylinder>
-  </link>
 
   <gazebo>
     <plugin name='simple_drone' filename='libplugin_drone.so'>
@@ -339,48 +313,4 @@
       </plugin>
     </sensor>
   </gazebo>
-
-
-
-
-
-  <gazebo reference="laser_frame">
-    <material>Gazebo/Red</material>
-
-    <sensor name="laser" type="ray">
-      <pose> 0 0 0 0 0 0 </pose>
-      <visualize>true</visualize>
-      <update_rate>10</update_rate>
-      <ray>
-        <scan>
-          <horizontal>
-            <samples>360</samples>
-            <min_angle>-3.14</min_angle>
-            <max_angle>3.14</max_angle>
-          </horizontal>
-        </scan>
-        <range>
-          <min>0.3</min>
-          <max>12</max>
-        </range>
-      </ray>
-      <plugin name="laser_controller" filename="libgazebo_ros_ray_sensor.so">
-        <ros>
-          <namespace>${mp['namespace']}</namespace>
-          <argument>~/out:=scan</argument>
-          <remapping>~/out:=~/scan</remapping>
-
-        </ros>
-        <output_type>sensor_msgs/LaserScan</output_type>
-        <frame_name>${mp['namespace']}/laser_frame</frame_name>
-        <!-- 
-        <frame_name>simple_drone/laser_frame</frame_name>  
-        -->
-      </plugin>
-    </sensor>
-  </gazebo>
-
-
-
-
 </robot>

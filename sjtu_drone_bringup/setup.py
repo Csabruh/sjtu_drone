@@ -3,6 +3,7 @@ from glob import glob
 import os
 
 package_name = 'sjtu_drone_bringup'
+package_name_addon = 'sjtu_drone_control'
 
 setup(
     name=package_name,
@@ -15,6 +16,7 @@ setup(
         (os.path.join('share', package_name, "launch"), glob('launch/*launch.[pxy][yma]*')),
         (os.path.join('share', package_name, "rviz"), glob('rviz/*.rviz')),
         (os.path.join('share', package_name, "config"), glob('config/*.yaml')),
+        (os.path.join('share', package_name_addon, "sjtu_drone_control"), glob('sjtu_drone_control/*.py')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
