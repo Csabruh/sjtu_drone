@@ -13,6 +13,7 @@ setup(
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
         (os.path.join('share', package_name, "sjtu_drone_control"), glob('sjtu_drone_control/drone_utils/*.py')),
+        (os.path.join('share', package_name, "sjtu_drone_control"), glob('sjtu_drone_control/ml_dataset/*.joblib'))
         
     ],
     install_requires=['setuptools'],
@@ -29,7 +30,7 @@ setup(
             'open_loop_control = sjtu_drone_control.open_loop_control:main',
             'drone_position_control = sjtu_drone_control.drone_position_control:main',
             'movement_control = sjtu_drone_control.movement_control:main',
-            'lidar_scan_feldolg = sjtu_drone_control.lidar_scan_feldolg:main'
+            'lidar_scan_feldolg = sjtu_drone_control.drone_utils.lidar_scan_feldolg:main'
             
         ],
     },

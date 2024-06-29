@@ -16,7 +16,7 @@
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist, Vector3
-from std_msgs.msg import Empty
+from std_msgs.msg import Empty, String
 import sys
 import termios
 import tty
@@ -50,6 +50,7 @@ class TeleopNode(Node):
         self.cmd_vel_publisher = self.create_publisher(Twist, 'cmd_vel', 10)
         self.takeoff_publisher = self.create_publisher(Empty, 'takeoff', 10)
         self.land_publisher = self.create_publisher(Empty, 'land', 10)
+        self.keyboard_input= self.create_publisher(String, 'kb_input', 1024)
 
         # Velocity parameters
         self.linear_velocity = 0.0
@@ -76,6 +77,9 @@ class TeleopNode(Node):
             # Implement a non-blocking keyboard read
             key = self.get_key()
             # Handle velocity changes
+            
+            self.pub_kb_input(key)
+
             if key.lower() == 'q':
                 self.linear_velocity = min(self.linear_velocity + self.linear_increment,
                                            self.max_linear_velocity)
@@ -138,6 +142,9 @@ class TeleopNode(Node):
                 self.publish_cmd_vel()
                 self.land_publisher.publish(Empty())
 
+
+            
+
     def get_key(self) -> str:
         """
         Function to capture keyboard input
@@ -158,6 +165,13 @@ class TeleopNode(Node):
         """
         twist = Twist(linear=linear_vec, angular=angular_vec)
         self.cmd_vel_publisher.publish(twist)
+
+    def pub_kb_input(self, key: str):
+
+        if key.lower() == 'w' or key.lower() == 's' or key.lower() == 'x' or key.lower() == 'a' or key.lower() == 'd':
+                key_input = String()
+                key_input.data = key
+                self.keyboard_input.publish(key_input)
 
 
 def main(args=None):
