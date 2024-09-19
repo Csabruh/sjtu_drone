@@ -116,7 +116,7 @@ class StateMachine(Node):
         self.Unit.velMode(False)
         self.Unit.posCtrl(False)
         
-
+        # ros2 launch slam_toolbox online_async_launch.py slam_params_file:=./src/sjtu_drone/sjtu_drone_description/src/mapper_params_online_async.yaml use_sim_time:=true
 
 
     def SM_timer_callback(self): 
@@ -129,8 +129,6 @@ class StateMachine(Node):
                 self.Unit.takeOff()
                 self.Unit.velMode(True)
                 #self.Unit.posCtrl(True)
-
-                
 
                 print("Drone state jelenleg: {}" .format(self._DroneState))
                 #print(self.Unit.isPosctrl)
@@ -182,8 +180,6 @@ class StateMachine(Node):
                 self.Unit.posCtrl(False)
                 self.Unit.velMode(True)
 
-                
-
                 goal_x_min = self.goal_position[0] - 0.1
                 goal_x_max = self.goal_position[0] + 0.1
                 goal_y_min = self.goal_position[1] - 0.1
@@ -194,8 +190,6 @@ class StateMachine(Node):
 
                 #print(self.goal_position)
                 #print(self._gt_pose.position)  
-
-                
 
                 if self._DroneMode == 'velocity': 
 
@@ -241,9 +235,7 @@ class StateMachine(Node):
             case 4: #Evade obstacle
 
                 self.Unit.posCtrl(False)
-                self.Unit.velMode(True)
-                
-                
+                self.Unit.velMode(True)        
 
                 if self._DroneMode == 'velocity': 
                     avoid_done = self.avoid_obstacle()

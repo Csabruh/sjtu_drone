@@ -62,8 +62,6 @@ class Scan_feldolg(Node):
 
         for x, value in np.ndenumerate(self.ScanData):
             #self.deg = int(str(x).translate({ord(i): None for i in '(),'})) folyamatosan pörög felfele
-
-
             if self.deg < 360: 
                 index_left = self.deg
                 self.obstacleRanges[index_left] = (value)
