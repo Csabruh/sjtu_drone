@@ -30,16 +30,11 @@ Odom_pos = [x, y, z]
 Target_vektor = [(x1-x), (y1-y), (z1-z)]
 rpy1 = [0.0, 0.0, 0.0]
 Target_orientation = [0, 0, 0]
-Elemi_vektor = [0.0, 0.0, 0.0]
 
 
 vektor_magn = math.sqrt(math.pow(Target_vektor[0],2) + math.pow(Target_vektor[1],2) + math.pow(Target_vektor[2],2))
 print("Target vektor:", Target_vektor)
 print("vektor magnitude:",vektor_magn)
-
-Elemi_vektor[0] = Target_vektor[0] / vektor_magn    #x
-Elemi_vektor[1] = Target_vektor[1] / vektor_magn    #y
-Elemi_vektor[2] = Target_vektor[2] / vektor_magn    #z
 
 skew_x = Target_pos[0] - Odom_pos[0]
 skew_y = Target_pos[1] - Odom_pos[1]
