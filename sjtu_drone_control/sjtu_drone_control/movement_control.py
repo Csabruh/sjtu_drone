@@ -29,11 +29,6 @@ from sjtu_drone_control.drone_utils.lidar_scan_feldolg import Scan_feldolg
 v_linear: Vector3 = Vector3()
 v_angular: Vector3 = Vector3()
 
-feature_selection = [27, 28,  29,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  43,  44, 45,  46,
-                    47,  48,  49, 122, 123, 124, 173, 174, 175, 176, 179, 180, 181, 182, 183, 184, 185, 186, 189, 190, 
-                    191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 
-                    211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 232]
-
 #Target_position = (-1.67553, 41.0594, 0), Orientation(0, 0, 0.699463, 0.714669)
 
 
@@ -105,6 +100,10 @@ class StateMachine(Node):
         self.TargetOrientation = [0.0, 0.0, 0.0]
         
         self.goal_position = [-1.67553, 41.0594, 1.0]
+	feature_selection = [27, 28,  29,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  43,  44, 45,  46,
+                    		47,  48,  49, 122, 123, 124, 173, 174, 175, 176, 179, 180, 181, 182, 183, 184, 185, 186, 189, 190, 
+                    		191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 
+                    		211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 232]
 
         self.sub_state = self.create_subscription(Int8, 'simple_drone/state', self.cb_state, 1024)
         self.sub_ObstEnc = self.create_subscription(Bool, 'simple_drone/ObstEnc', self.cb_obs, 1024)
@@ -258,44 +257,51 @@ class StateMachine(Node):
 
     def getVektor_toPose(self, x, y, z):
         #get initial data
-        
         self.drone_pose = self._gt_pose
         x1 = self._gt_pose.position.x
         y1 = self._gt_pose.position.y
         z1 = self._gt_pose.position.z
+	Target_vektor = [(x-x1), (y-y1), (z-z1)]
         
+	#így áll jelenleg a drón. Betölti ezt a class-ba.
         self.q1[0] = self._gt_pose.orientation.w
         self.q1[1] = self._gt_pose.orientation.x
         self.q1[2] = self._gt_pose.orientation.y
         self.q1[3] = self._gt_pose.orientation.z
-
         self.rpy1 = euler_from_quaternion(self.q1)
-        #így áll jelenleg a drón
 
-        #Target_position = [x, y, z]
-        Target_vektor = [(x-x1), (y-y1), (z-z1)]
-        vektor_magn = math.sqrt(math.pow(Target_vektor[0],2) + math.pow(Target_vektor[1],2) + math.pow(Target_vektor[2],2))
-        Elemi_vektor = [0.0, 0.0, 0.0]
-        Elemi_vektor[0] = Target_vektor[0] / vektor_magn    #x
-        Elemi_vektor[1] = Target_vektor[1] / vektor_magn    #y
-        Elemi_vektor[2] = Target_vektor[2] / vektor_magn    #z
-        #print('Elemi vektor', Elemi_vektor)
+        #Célvektor bemérése és differencia 
+        
+        #vektor_magn = math.sqrt(math.pow(Target_vektor[0],2) + math.pow(Target_vektor[1],2) + math.pow(Target_vektor[2],2))
+	#Csax X-Y síkban keressük a szögeltérést, hogy az elfordulandó szöget megkapjuk. Nincs vertikális mozgás.
 
-        elemi_tangens = math.atan(Elemi_vektor[1]/Elemi_vektor[0])
-        #print('tangent:', elemi_tangens)
-    
+	vektor_magn = math.sqrt(math.pow(Target_vektor[0],2) + math.pow(Target_vektor[1],2))
+	mag1 = math.sqrt(math.pow(Target_vektor[0], 2) + math.pow(Target_vektor[1], 2))
+	mag2 = math.sqrt(math.pow(1, 2) + math.pow(0, 2))
+	beta = math.acos(skew_x / (mag1 * mag2)) 
+	
+	if Target_vektor[1] < 0:
+	    if Target_vektor[0] < 0:
+	        TargetOrientation[0] = -beta 
+	    elif Target_vektor[0] > 0:
+	        TargetOrientation[0] = -beta
+	    elif Target_vektor[0] == 0:
+	        TargetOrientation[0] = - 1.57079
+	elif Target_vektor[1] > 0:
+	    if Target_vektor[0] < 0:
+	        TargetOrientation[0] = beta
+	    elif Target_vektor[0] < 0:
+	        TargetOrientation[0] = beta
+	    elif Target_vektor[0] == 0:
+	        TargetOrientation[0] = 1.57079  
+	else: 
+	    if skew_x < 0:
+	        TargetOrientation[0] = 3.14159
+	    elif skew_x >= 0:
+	        TargetOrientation[0] = 0
 
-        if Elemi_vektor[0] > 0 and Elemi_vektor[1] > 0:
-            self.TargetOrientation[0] = elemi_tangens
-        elif Elemi_vektor[0] < 0 and Elemi_vektor[1] > 0:
-            self.TargetOrientation[0] = elemi_tangens*(-1)
-        elif Elemi_vektor[0] < 0 and Elemi_vektor[1] < 0:
-            self.TargetOrientation[0] = pi + abs(elemi_tangens)
-        elif Elemi_vektor[0] > 0 and Elemi_vektor[1] < 0:
-            self.TargetOrientation[0] = (pi*3/2) - elemi_tangens
-
-        self.TargetOrientation[1] = 0.0
-        self.TargetOrientation[2] = 0.0
+	TargetOrientation[1] = 0
+	TargetOrientation[2] = 0
 
         self.q_orientation = quaternion_from_euler(self.TargetOrientation[0], self.TargetOrientation[1], self.TargetOrientation[2])
         return self.TargetOrientation
@@ -329,7 +335,7 @@ class StateMachine(Node):
 
 
     def avoid_obstacle(self):
-        global feature_selection 
+
         dataset = [0.0] * 80
         index = 0
         selector = 0
@@ -362,7 +368,6 @@ class StateMachine(Node):
 
             self.Unit.hover()
             return True
-
 
 
 
