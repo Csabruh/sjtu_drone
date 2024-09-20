@@ -4,7 +4,7 @@ from math import pi
 #from tf_transformations import euler_from_quaternion, quaternion_from_euler
 
 x = 0
-x1 = -1.681232
+x1 = -10.681232
 y = 0
 y1 = 45.123123
 z = 0
@@ -23,22 +23,37 @@ Elemi_vektor[1] = Target_vektor[1] / vektor_magn    #y
 Elemi_vektor[2] = Target_vektor[2] / vektor_magn    #z
 
 Target_orientation = [0, 0, 0]
-
-if Elemi_vektor[0] > 0 and Elemi_vektor[1] > 0:
-    Target_orientation[2] = math.atan(Elemi_vektor[1]/Elemi_vektor[0])
-elif Elemi_vektor[0] < 0 and Elemi_vektor[1] > 0:
-    Target_orientation[2] = pi/2 - math.atan(Elemi_vektor[1]/Elemi_vektor[0])
-elif Elemi_vektor[0] < 0 and Elemi_vektor[1] < 0:
-    Target_orientation[2] = -pi + math.atan(Elemi_vektor[1]/Elemi_vektor[0])
-elif Elemi_vektor[0] > 0 and Elemi_vektor[1] < 0:
-    Target_orientation[2] = pi/2 - math.atan(Elemi_vektor[1]/Elemi_vektor[0])
-
-szög_diff = Target_orientation[2] - rpy1[2]
-
-Target_orientation[0] = 3.14 * Elemi_vektor[0] / Elemi_vektor[1]
+#Target_orientation[0] = 3.14 * Elemi_vektor[0] / Elemi_vektor[1]
 Target_orientation[1] = 0
 Target_orientation[2] = 0
-print(Target_orientation)
+
+gamma = math.atan(Elemi_vektor[1]/Elemi_vektor[0])
+print(gamma)
+
+if Elemi_vektor[0] > 0:
+    if Elemi_vektor[1] > 0:
+        Target_orientation[0] = gamma
+    elif Elemi_vektor[1] < 0:    
+        Target_orientation[0] = gamma
+    elif Elemi_vektor[1] == 0: 
+        Target_orientation[0] = 0
+elif Elemi_vektor[0] < 0:
+    if Elemi_vektor[1] > 0:
+        Target_orientation[0] = gamma
+    elif Elemi_vektor[1] < 0:    
+        Target_orientation[0] = 0 - gamma
+    elif Elemi_vektor[1] == 0: 
+        Target_orientation[0] = 3.14159
+elif Elemi_vektor[0] == 0:
+    if Elemi_vektor[1] > 0:
+        Target_orientation[0] = 1.57079 
+    elif Elemi_vektor[1] < 0:
+        Target_orientation[0] = -1.57079 
+    elif Elemi_vektor[1] == 0:
+        Target_orientation[0] = 0
+
+szög_diff = Target_orientation[2] - rpy1[2]
+print("Target orientation[rad]:",Target_orientation)
 
 #rpy1 = quaternion_from_euler(Target_orientation[0], Target_orientation[1], Target_orientation[2])
 #rpy2 = quaternion_from_euler(0,0,0)
