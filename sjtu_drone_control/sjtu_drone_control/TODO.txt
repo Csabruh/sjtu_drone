@@ -1,0 +1,7 @@
+PID a mozgáshoz
+Message kommunikáció összefésülés/igazítás
+Random tree javítás
+Proporcionális navigálás (buta if-else)
+Új mesterséges navigálás (DDPG)
+Összehasonlítás elkészítése
+Target-Robot Szögkalkulálás helyesbítés
