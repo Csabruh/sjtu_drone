@@ -120,7 +120,15 @@ def generate_launch_description():
             namespace=model_ns,
             output='screen',
         ),
-      #Added the controll init
+
+
+
+        OpaqueFunction(
+            function=get_teleop_controller,
+            kwargs={'model_ns': model_ns},
+        ),
+
+     	 #Added the control init	    
         Node(
             package='sjtu_drone_control',
             executable='movement_control',
@@ -128,13 +136,6 @@ def generate_launch_description():
             namespace=model_ns,
             output='screen -e',
         ),
-
-        OpaqueFunction(
-            function=get_teleop_controller,
-            kwargs={'model_ns': model_ns},
-        ),
-        
-        
         
 
 	
